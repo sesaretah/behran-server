@@ -21,7 +21,7 @@ default: &default
 
 development:
   <<: *default
-  database: upm_dev
+  database: behran_dev
 
 
 # Warning: The database defined as "test" will be erased and
@@ -29,8 +29,8 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: tavan_test
+  database: behran_test
 
 production:
   <<: *default
-  database: tavan_prod
+  database: behran_prod

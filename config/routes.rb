@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     get "/users/service", to: "users#service"
   end
+  get ':slug' => 'home#index'
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   api_version(:module => "V1", :path => {:value => "v1"}) do
 
@@ -58,7 +59,7 @@ Rails.application.routes.draw do
 
     get '/notifications' , to: 'notifications#my'
     post '/notifications' , to: 'notifications#seen'
-    
+
 
     resources :profiles
     resources :roles
@@ -76,6 +77,8 @@ Rails.application.routes.draw do
     resources :time_sheets
     resources :devices
     resources :groups
+    resources :shortners
+    resources :items
     resources :settings
 
     post '/users/assignments', to: 'users#assignments'
