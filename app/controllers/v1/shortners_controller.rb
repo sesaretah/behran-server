@@ -27,10 +27,23 @@ class V1::ShortnersController < ApplicationController
   end
 
   def create
-    @shortner = Shortner.new(shortner_params)
+    # Extract href from params before creating shortner
+    href = params[:shortner][:href]
+    
+    # Create shortner with only URL
+    @shortner = Shortner.new(url: params[:shortner][:url])
     @shortner.user_id = current_user.id
     
     if @shortner.save
+      # Create item with the shortner_id and provided href
+      if href.present?
+        @item = @shortner.items.create!(
+          title: extract_title_from_url(@shortner.url),
+          description: "Shortened link for #{@shortner.url}",
+          href: href
+        )
+      end
+      
       render json: { 
         data: ShortnerSerializer.new(@shortner, scope: {user_id: current_user.id}).as_json, 
         klass: 'Shortner' 
@@ -43,6 +56,17 @@ class V1::ShortnersController < ApplicationController
       }, status: :unprocessable_entity
     end
   end
+  
+  private
+  
+  def extract_title_from_url(url)
+    # Extract a simple title from the URL
+    uri = URI.parse(url)
+    domain = uri.host || url
+    domain.gsub(/^www\./, '').capitalize
+  rescue
+    "Shortened Link"
+  end
 
   def update
     @shortner = Shortner.find(params[:id])
@@ -51,8 +75,7 @@ class V1::ShortnersController < ApplicationController
     end
   end
 
-
   def shortner_params
-    params.require(:shortner).permit(:url)
+    params.require(:shortner).permit(:url, :href)
   end
 end
