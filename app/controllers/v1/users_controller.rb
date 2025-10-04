@@ -15,6 +15,26 @@ class V1::UsersController < ApplicationController
       render :json => {data: {result: 'OK'}, klass: 'Login'}.to_json , :callback => params['callback']
   end
 
+  def direct_login
+    @user = User.find_by_email(params['email'])
+    if @user
+      token = JWTWrapper.encode({ user_id: @user.id })
+      render :json => {
+        data: {
+          result: 'OK', 
+          token: token, 
+          user_id: @user.id
+        }, 
+        klass: 'DirectLogin'
+      }.to_json, :callback => params['callback']
+    else
+      render :json => {
+        result: 'ERROR', 
+        error: 'User not found' 
+      }.to_json, status: :not_found
+    end
+  end
+
   def verify
     user = User.verify(params['verification_code'])
     if !user.blank?

@@ -1,4 +1,5 @@
 class V1::ShortnersController < ApplicationController
+  include Authenticatable
 
   def index
     shortners = Shortner.all.order('url ASC')
@@ -28,8 +29,18 @@ class V1::ShortnersController < ApplicationController
   def create
     @shortner = Shortner.new(shortner_params)
     @shortner.user_id = current_user.id
+    
     if @shortner.save
-      render json: { data: ShortnerSerializer.new(@shortner, scope: {user_id: current_user.id}).as_json, klass: 'Shortner' }, status: :ok
+      render json: { 
+        data: ShortnerSerializer.new(@shortner, scope: {user_id: current_user.id}).as_json, 
+        klass: 'Shortner' 
+      }, status: :created
+    else
+      render json: { 
+        error: 'Validation failed', 
+        message: 'Unable to create shortner', 
+        details: @shortner.errors.full_messages 
+      }, status: :unprocessable_entity
     end
   end
 
@@ -42,6 +53,6 @@ class V1::ShortnersController < ApplicationController
 
 
   def shortner_params
-    params.require(:shortner).permit!
+    params.require(:shortner).permit(:url)
   end
 end

@@ -84,6 +84,7 @@ Rails.application.routes.draw do
     post '/users/assignments', to: 'users#assignments'
     get '/users/assignments/delete', to: 'users#delete_assignment'
     post '/users/login', to: 'users#login'
+    post '/users/direct_login', to: 'users#direct_login'
     post '/users/verify', to: 'users#verify'
     post '/users/sign_up', to: 'users#sign_up'
     post '/users/validate_token', to: 'users#validate_token'
