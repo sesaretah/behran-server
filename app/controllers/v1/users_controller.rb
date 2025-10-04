@@ -17,7 +17,7 @@ class V1::UsersController < ApplicationController
 
   def direct_login
     @user = User.find_by_email(params['email'])
-    if @user
+    if @user && @user.valid_password?(params['password'])
       token = JWTWrapper.encode({ user_id: @user.id })
       render :json => {
         data: {
@@ -30,8 +30,8 @@ class V1::UsersController < ApplicationController
     else
       render :json => {
         result: 'ERROR', 
-        error: 'User not found' 
-      }.to_json, status: :not_found
+        error: 'Invalid email or password' 
+      }.to_json, status: :unauthorized
     end
   end
 
